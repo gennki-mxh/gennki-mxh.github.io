@@ -1,0 +1,909 @@
+<!DOCTYPE html>
+<html lang="en-us" dir="ltr">
+    <head><meta charset='utf-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content="对象复用的介绍及其分类 什么是对象复用 定位：“对象复用”属于Python运行时的策略，是一种高层设计思路 作用：对于某些不可变对象(int,float,str,tuple&hellip;)，如果值相同，就重复使用而非新建 根本依据：对象的不可变性。只有不可变对象才能安全复用 对象复用的实现方法，按触发方式分类 编译时自动(不可依赖，仅作了解)：常量折叠 运行时自动(CPython中可依赖)：小整数缓存，标识符字符串自动驻留 显式手动(程序员手动)：sys.intern()，强制驻留字符串 关于常量折叠 什么是常量折叠(Constant Folding) 定位：常量折叠是一项编译优化技术，在编译时发挥作用 作用：计算常量表达式(如2+3→5)，并复用相同的字面量对象(如a=257，b=257可能指向同一对象) 依赖：常量折叠依赖于编译单元划分，而编译单元划分依赖于CPython的调用方式(运行脚本或交互模式) 作用域：同一代码块(类、函数、模块顶层、交互式单行语句&hellip;) 保证性：不可靠。编译器不需要保证常量折叠的结果，因为它属于“优化技术”而非“语言规范” 引用池：常量表(Constant Table)，存在于每个代码块中，存放该代码块所有用到的字面量 编译器可自由选择 是否做常量折叠 在多大范围内做(同一行，同一语句，同一函数，同一模块) 是否对字面量进行复用 举例说明常量折叠 声明一下，所有的例子均在同一模块内，通过VSCode调用同一个CPython(3.13)\n">
+<title>浅谈我对CPython对象复用机制的理解和认识</title>
+
+
+<link rel="canonical" href="https://gennki-mxh.github.io/p/%E6%B5%85%E8%B0%88%E6%88%91%E5%AF%B9cpython%E5%AF%B9%E8%B1%A1%E5%A4%8D%E7%94%A8%E6%9C%BA%E5%88%B6%E7%9A%84%E7%90%86%E8%A7%A3%E5%92%8C%E8%AE%A4%E8%AF%86/">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap">
+
+
+<link rel="stylesheet" href="/scss/style.min.6c875234350e518395efbf51958523b0852fb2215ab8cb81358f9317153eba2d.css"><meta property='og:title' content="浅谈我对CPython对象复用机制的理解和认识">
+<meta property='og:description' content="对象复用的介绍及其分类 什么是对象复用 定位：“对象复用”属于Python运行时的策略，是一种高层设计思路 作用：对于某些不可变对象(int,float,str,tuple&hellip;)，如果值相同，就重复使用而非新建 根本依据：对象的不可变性。只有不可变对象才能安全复用 对象复用的实现方法，按触发方式分类 编译时自动(不可依赖，仅作了解)：常量折叠 运行时自动(CPython中可依赖)：小整数缓存，标识符字符串自动驻留 显式手动(程序员手动)：sys.intern()，强制驻留字符串 关于常量折叠 什么是常量折叠(Constant Folding) 定位：常量折叠是一项编译优化技术，在编译时发挥作用 作用：计算常量表达式(如2+3→5)，并复用相同的字面量对象(如a=257，b=257可能指向同一对象) 依赖：常量折叠依赖于编译单元划分，而编译单元划分依赖于CPython的调用方式(运行脚本或交互模式) 作用域：同一代码块(类、函数、模块顶层、交互式单行语句&hellip;) 保证性：不可靠。编译器不需要保证常量折叠的结果，因为它属于“优化技术”而非“语言规范” 引用池：常量表(Constant Table)，存在于每个代码块中，存放该代码块所有用到的字面量 编译器可自由选择 是否做常量折叠 在多大范围内做(同一行，同一语句，同一函数，同一模块) 是否对字面量进行复用 举例说明常量折叠 声明一下，所有的例子均在同一模块内，通过VSCode调用同一个CPython(3.13)\n">
+<meta property='og:url' content='https://gennki-mxh.github.io/p/%E6%B5%85%E8%B0%88%E6%88%91%E5%AF%B9cpython%E5%AF%B9%E8%B1%A1%E5%A4%8D%E7%94%A8%E6%9C%BA%E5%88%B6%E7%9A%84%E7%90%86%E8%A7%A3%E5%92%8C%E8%AE%A4%E8%AF%86/'>
+<meta property='og:site_name' content='GennKi-梦心湖'>
+<meta property='og:type' content='article'><meta property='article:section' content='Post' /><meta property='article:published_time' content='2026-08-07T10:10:53&#43;08:00'/><meta property='article:modified_time' content='2026-08-07T10:10:53&#43;08:00'/>
+<meta name="twitter:title" content="浅谈我对CPython对象复用机制的理解和认识">
+<meta name="twitter:description" content="对象复用的介绍及其分类 什么是对象复用 定位：“对象复用”属于Python运行时的策略，是一种高层设计思路 作用：对于某些不可变对象(int,float,str,tuple&hellip;)，如果值相同，就重复使用而非新建 根本依据：对象的不可变性。只有不可变对象才能安全复用 对象复用的实现方法，按触发方式分类 编译时自动(不可依赖，仅作了解)：常量折叠 运行时自动(CPython中可依赖)：小整数缓存，标识符字符串自动驻留 显式手动(程序员手动)：sys.intern()，强制驻留字符串 关于常量折叠 什么是常量折叠(Constant Folding) 定位：常量折叠是一项编译优化技术，在编译时发挥作用 作用：计算常量表达式(如2+3→5)，并复用相同的字面量对象(如a=257，b=257可能指向同一对象) 依赖：常量折叠依赖于编译单元划分，而编译单元划分依赖于CPython的调用方式(运行脚本或交互模式) 作用域：同一代码块(类、函数、模块顶层、交互式单行语句&hellip;) 保证性：不可靠。编译器不需要保证常量折叠的结果，因为它属于“优化技术”而非“语言规范” 引用池：常量表(Constant Table)，存在于每个代码块中，存放该代码块所有用到的字面量 编译器可自由选择 是否做常量折叠 在多大范围内做(同一行，同一语句，同一函数，同一模块) 是否对字面量进行复用 举例说明常量折叠 声明一下，所有的例子均在同一模块内，通过VSCode调用同一个CPython(3.13)\n">
+    <link rel="shortcut icon" href="/img/moon-stars.svg" />
+
+    </head>
+    <body class="
+    article-page
+    ">
+    <script>
+        (function() {
+            const colorSchemeKey = 'StackColorScheme';
+            if(!localStorage.getItem(colorSchemeKey)){
+                localStorage.setItem(colorSchemeKey, "auto");
+            }
+        })();
+    </script><script>
+    (function() {
+        const colorSchemeKey = 'StackColorScheme';
+        const colorSchemeItem = localStorage.getItem(colorSchemeKey);
+        const supportDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches === true;
+
+        if (colorSchemeItem == 'dark' || colorSchemeItem === 'auto' && supportDarkMode) {
+            
+
+            document.documentElement.dataset.scheme = 'dark';
+        } else {
+            document.documentElement.dataset.scheme = 'light';
+        }
+    })();
+</script>
+<div class="container main-container flex on-phone--column extended"><aside class="sidebar left-sidebar sticky ">
+    <button class="hamburger hamburger--spin" type="button" id="toggle-menu" aria-label="切换菜单">
+        <span class="hamburger-box">
+            <span class="hamburger-inner"></span>
+        </span>
+    </button>
+
+    <header>
+        <figure class="site-avatar">
+                <a href="/">
+                    <img src="/img/avatar.png" 
+                        width="150"
+                        height="149"
+                        class="site-logo"
+                        loading="lazy"
+                        alt="Avatar">
+                </a>
+                
+                    <span class="emoji">😘</span>
+                
+            </figure>
+        
+        
+        <div class="site-meta">
+            <h1 class="site-name"><a href="/">GennKi-梦心湖</a></h1>
+            <h2 class="site-description">欢迎进入我的网站，本站主要分享个人生活记录和学习笔记，敬请期待</h2>
+        </div>
+    </header><ol class="menu-social">
+            
+                <li>
+                    <a 
+                        href='https://space.bilibili.com/178730039'
+                        
+                        title="Bilibili"
+                        rel="me"
+                    >
+                        
+                        
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-brand-bilibili"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M3 10a4 4 0 0 1 4 -4h10a4 4 0 0 1 4 4v6a4 4 0 0 1 -4 4h-10a4 4 0 0 1 -4 -4v-6" /><path d="M8 3l2 3" /><path d="M16 3l-2 3" /><path d="M9 13v-2" /><path d="M15 11v2" /></svg>
+                        
+                    </a>
+                </li>
+            
+                <li>
+                    <a 
+                        href='https://github.com/gennki-mxh'
+                        
+                        title="GitHub"
+                        rel="me"
+                    >
+                        
+                        
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-brand-github" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+  <path d="M9 19c-4.3 1.4 -4.3 -2.5 -6 -3m12 5v-3.5c0 -1 .1 -1.4 -.5 -2c2.8 -.3 5.5 -1.4 5.5 -6a4.6 4.6 0 0 0 -1.3 -3.2a4.2 4.2 0 0 0 -.1 -3.2s-1.1 -.3 -3.5 1.3a12.3 12.3 0 0 0 -6.2 0c-2.4 -1.6 -3.5 -1.3 -3.5 -1.3a4.2 4.2 0 0 0 -.1 3.2a4.6 4.6 0 0 0 -1.3 3.2c0 4.6 2.7 5.7 5.5 6c-.6 .6 -.6 1.2 -.5 2v3.5" />
+</svg>
+
+
+
+                        
+                    </a>
+                </li>
+            
+        </ol><ol class="menu" id="main-menu">
+        
+        
+        
+        <li >
+            <a href='/' >
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-home" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <polyline points="5 12 3 12 12 3 21 12 19 12" />
+  <path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-7" />
+  <path d="M9 21v-6a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2v6" />
+</svg>
+
+
+
+                
+                <span>主页</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/%E5%85%B3%E4%BA%8E/' >
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-user" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="7" r="4" />
+  <path d="M6 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2" />
+</svg>
+
+
+
+                
+                <span>关于</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/archives/' >
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-archive" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <rect x="3" y="4" width="18" height="4" rx="2" />
+  <path d="M5 8v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-10" />
+  <line x1="10" y1="12" x2="14" y2="12" />
+</svg>
+
+
+
+                
+                <span>归档</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/search/' >
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="10" cy="10" r="7" />
+  <line x1="21" y1="21" x2="15" y2="15" />
+</svg>
+
+
+
+                
+                <span>搜索</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/%E9%93%BE%E6%8E%A5/' >
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-link" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <path d="M10 14a3.5 3.5 0 0 0 5 0l4 -4a3.5 3.5 0 0 0 -5 -5l-.5 .5" />
+  <path d="M14 10a3.5 3.5 0 0 0 -5 0l-4 4a3.5 3.5 0 0 0 5 5l.5 -.5" />
+</svg>
+
+
+
+                
+                <span>链接</span>
+            </a>
+        </li>
+        
+        <li class="menu-bottom-section">
+            <ol class="menu">
+
+                
+                    <li id="dark-mode-toggle">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="8" cy="12" r="2" />
+  <rect x="2" y="6" width="20" height="12" rx="6" />
+</svg>
+
+
+
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-right" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="16" cy="12" r="2" />
+  <rect x="2" y="6" width="20" height="12" rx="6" />
+</svg>
+
+
+
+                        <span>暗色模式</span>
+                    </li>
+                
+            </ol>
+        </li>
+    </ol>
+</aside>
+
+    <aside class="sidebar right-sidebar sticky">
+        
+            
+                
+    <section class="widget archives">
+        <div class="widget-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-hash" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <line x1="5" y1="9" x2="19" y2="9" />
+  <line x1="5" y1="15" x2="19" y2="15" />
+  <line x1="11" y1="4" x2="7" y2="20" />
+  <line x1="17" y1="4" x2="13" y2="20" />
+</svg>
+
+
+
+        </div>
+        <h2 class="widget-title section-title">目录</h2>
+        
+        <div class="widget--toc">
+            <nav class="toc-nav" id="TableOfContents">
+                
+  <ol>
+    <li><a href="#对象复用的介绍及其分类">对象复用的介绍及其分类</a>
+      <ol>
+        <li><a href="#什么是对象复用">什么是对象复用</a></li>
+        <li><a href="#对象复用的实现方法按触发方式分类">对象复用的实现方法，按触发方式分类</a></li>
+      </ol>
+    </li>
+    <li><a href="#关于常量折叠">关于常量折叠</a>
+      <ol>
+        <li><a href="#什么是常量折叠constant-folding">什么是常量折叠(Constant Folding)</a></li>
+        <li><a href="#编译器可自由选择">编译器可自由选择</a></li>
+        <li><a href="#举例说明常量折叠">举例说明常量折叠</a>
+          <ol>
+            <li><a href="#例1计算常量表达式">例1，计算常量表达式</a></li>
+            <li><a href="#例2复用相同字面量对象">例2，复用相同字面量对象</a></li>
+            <li><a href="#例3跨函数字面量复用">例3，跨函数字面量复用</a></li>
+            <li><a href="#例4跨类字面量复用">例4，跨类字面量复用</a></li>
+          </ol>
+        </li>
+        <li><a href="#模块常量表与代码块常量池的关系">模块常量表与代码块常量池的关系</a></li>
+      </ol>
+    </li>
+    <li><a href="#关于小整数缓存">关于小整数缓存</a>
+      <ol>
+        <li><a href="#什么是小整数缓存small-integer-cache">什么是小整数缓存(Small Integer Cache)</a></li>
+        <li><a href="#举例说明小整数缓存">举例说明小整数缓存</a></li>
+        <li><a href="#为什么小整数缓存采用预分配策略">为什么小整数缓存采用预分配策略</a></li>
+      </ol>
+    </li>
+    <li><a href="#关于字符串驻留">关于字符串驻留</a>
+      <ol>
+        <li><a href="#什么是字符串驻留string-interning">什么是字符串驻留(String Interning)</a></li>
+        <li><a href="#举例说明字符串驻留的应用">举例说明字符串驻留的应用</a></li>
+        <li><a href="#为什么字符串驻留采用懒加载策略">为什么字符串驻留采用“懒加载”策略</a></li>
+      </ol>
+    </li>
+    <li><a href="#关于常量去重">关于常量去重</a>
+      <ol>
+        <li><a href="#常量折叠与常量去重的精细区分">常量折叠与常量去重的精细区分</a></li>
+        <li><a href="#举个方便理解的栗子">举个方便理解的栗子</a></li>
+      </ol>
+    </li>
+    <li><a href="#三个池子设计哲学">三个池子设计哲学</a>
+      <ol>
+        <li><a href="#空白">空白</a></li>
+      </ol>
+    </li>
+  </ol>
+
+            </nav>
+        </div>
+    </section>
+
+            
+        
+    </aside>
+
+
+            <main class="main full-width">
+    <article class="main-article">
+    <header class="article-header">
+
+    <div class="article-details">
+    
+
+    <div class="article-title-wrapper">
+        <h2 class="article-title">
+            <a href="/p/%E6%B5%85%E8%B0%88%E6%88%91%E5%AF%B9cpython%E5%AF%B9%E8%B1%A1%E5%A4%8D%E7%94%A8%E6%9C%BA%E5%88%B6%E7%9A%84%E7%90%86%E8%A7%A3%E5%92%8C%E8%AE%A4%E8%AF%86/">浅谈我对CPython对象复用机制的理解和认识</a>
+        </h2>
+    
+        
+    </div>
+
+    
+    
+    
+    
+    
+    
+    
+    <footer class="article-meta">
+        
+            <div class="inline-meta">
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <path d="M11.795 21h-6.795a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v4" />
+  <circle cx="18" cy="18" r="4" />
+  <path d="M15 3v4" />
+  <path d="M7 3v4" />
+  <path d="M3 11h16" />
+  <path d="M18 16.496v1.504l1 1" />
+</svg>
+                    <time class="article-time--published" datetime='2026-08-07T10:10:53&#43;08:00'>2026-08-07</time>
+                
+
+                
+            </div>
+        
+
+        
+
+        
+    </footer>
+    
+</div>
+
+</header>
+
+    
+    <aside class="article-toc">
+        <details>
+            <summary>
+                <div class="article-toc-title">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-chevron-right"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M9 6l6 6l-6 6" /></svg>
+                    <span>目录</span>
+                </div>
+            </summary>
+            <nav class="toc-nav">
+                
+  <ol>
+    <li><a href="#对象复用的介绍及其分类">对象复用的介绍及其分类</a>
+      <ol>
+        <li><a href="#什么是对象复用">什么是对象复用</a></li>
+        <li><a href="#对象复用的实现方法按触发方式分类">对象复用的实现方法，按触发方式分类</a></li>
+      </ol>
+    </li>
+    <li><a href="#关于常量折叠">关于常量折叠</a>
+      <ol>
+        <li><a href="#什么是常量折叠constant-folding">什么是常量折叠(Constant Folding)</a></li>
+        <li><a href="#编译器可自由选择">编译器可自由选择</a></li>
+        <li><a href="#举例说明常量折叠">举例说明常量折叠</a>
+          <ol>
+            <li><a href="#例1计算常量表达式">例1，计算常量表达式</a></li>
+            <li><a href="#例2复用相同字面量对象">例2，复用相同字面量对象</a></li>
+            <li><a href="#例3跨函数字面量复用">例3，跨函数字面量复用</a></li>
+            <li><a href="#例4跨类字面量复用">例4，跨类字面量复用</a></li>
+          </ol>
+        </li>
+        <li><a href="#模块常量表与代码块常量池的关系">模块常量表与代码块常量池的关系</a></li>
+      </ol>
+    </li>
+    <li><a href="#关于小整数缓存">关于小整数缓存</a>
+      <ol>
+        <li><a href="#什么是小整数缓存small-integer-cache">什么是小整数缓存(Small Integer Cache)</a></li>
+        <li><a href="#举例说明小整数缓存">举例说明小整数缓存</a></li>
+        <li><a href="#为什么小整数缓存采用预分配策略">为什么小整数缓存采用预分配策略</a></li>
+      </ol>
+    </li>
+    <li><a href="#关于字符串驻留">关于字符串驻留</a>
+      <ol>
+        <li><a href="#什么是字符串驻留string-interning">什么是字符串驻留(String Interning)</a></li>
+        <li><a href="#举例说明字符串驻留的应用">举例说明字符串驻留的应用</a></li>
+        <li><a href="#为什么字符串驻留采用懒加载策略">为什么字符串驻留采用“懒加载”策略</a></li>
+      </ol>
+    </li>
+    <li><a href="#关于常量去重">关于常量去重</a>
+      <ol>
+        <li><a href="#常量折叠与常量去重的精细区分">常量折叠与常量去重的精细区分</a></li>
+        <li><a href="#举个方便理解的栗子">举个方便理解的栗子</a></li>
+      </ol>
+    </li>
+    <li><a href="#三个池子设计哲学">三个池子设计哲学</a>
+      <ol>
+        <li><a href="#空白">空白</a></li>
+      </ol>
+    </li>
+  </ol>
+
+            </nav>
+        </details>
+    </aside>
+    
+
+    <section class="article-content">
+    
+    
+    <h2 id="对象复用的介绍及其分类">对象复用的介绍及其分类
+</h2><h3 id="什么是对象复用">什么是对象复用
+</h3><ul>
+<li>定位：“对象复用”属于Python<strong>运行时</strong>的策略，是一种高层设计思路</li>
+<li>作用：对于<strong>某些不可变对象</strong>(int,float,str,tuple&hellip;)，如果<strong>值</strong>相同，就<strong>重复使用</strong>而非新建</li>
+<li>根本依据：对象的不可变性。只有不可变对象才能安全复用</li>
+</ul>
+<h3 id="对象复用的实现方法按触发方式分类">对象复用的实现方法，按触发方式分类
+</h3><ul>
+<li>编译时自动(不可依赖，仅作了解)：常量折叠</li>
+<li>运行时自动(CPython中可依赖)：小整数缓存，标识符字符串自动驻留</li>
+<li>显式手动(程序员手动)：<code>sys.intern()</code>，强制驻留字符串</li>
+</ul>
+<h2 id="关于常量折叠">关于常量折叠
+</h2><h3 id="什么是常量折叠constant-folding">什么是常量折叠(Constant Folding)
+</h3><ul>
+<li>定位：常量折叠是一项编译优化技术，在<strong>编译时</strong>发挥作用</li>
+<li>作用：计算常量表达式(如2+3→5)，并复用相同的字面量对象(如a=257，b=257可能指向同一对象)</li>
+<li>依赖：常量折叠依赖于<strong>编译单元划分</strong>，而编译单元划分依赖于CPython的调用方式(运行脚本或交互模式)</li>
+<li>作用域：同一代码块(类、函数、模块顶层、交互式单行语句&hellip;)</li>
+<li>保证性：不可靠。<strong>编译器不需要保证常量折叠的结果</strong>，因为它属于“优化技术”而非“语言规范”</li>
+<li>引用池：常量表(Constant Table)，存在于每个代码块中，存放该代码块所有用到的字面量</li>
+</ul>
+<h3 id="编译器可自由选择">编译器可自由选择
+</h3><ul>
+<li>是否做常量折叠</li>
+<li>在多大范围内做(同一行，同一语句，同一函数，同一模块)</li>
+<li>是否对字面量进行复用</li>
+</ul>
+<h3 id="举例说明常量折叠">举例说明常量折叠
+</h3><p>声明一下，所有的例子均在同一模块内，通过VSCode调用同一个CPython(3.13)</p>
+<h4 id="例1计算常量表达式">例1，计算常量表达式
+</h4><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-py" data-lang="py"><span class="line"><span class="cl"><span class="n">a</span> <span class="o">=</span> <span class="mi">2</span><span class="o">+</span><span class="mi">3</span>
+</span></span><span class="line"><span class="cl"><span class="n">b</span> <span class="o">=</span> <span class="mi">5</span>
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="n">a</span> <span class="ow">is</span> <span class="n">b</span><span class="p">)</span>  <span class="c1"># True，a和b指向同一整数对象5，说明该对象被重复使用了</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">a</span> <span class="o">=</span> <span class="mi">666</span><span class="o">+</span><span class="mi">999</span>
+</span></span><span class="line"><span class="cl"><span class="n">b</span> <span class="o">=</span> <span class="mi">1665</span>
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="n">a</span> <span class="ow">is</span> <span class="n">b</span><span class="p">)</span>  <span class="c1"># True，同理</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h4 id="例2复用相同字面量对象">例2，复用相同字面量对象
+</h4><p>对于不在小整数范围（-5~256）内的整数，由模块级常量表持有它们的引用并复用</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-py" data-lang="py"><span class="line"><span class="cl"><span class="n">a</span> <span class="o">=</span> <span class="mi">999</span>
+</span></span><span class="line"><span class="cl"><span class="n">b</span> <span class="o">=</span> <span class="mi">999</span>
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="n">a</span> <span class="ow">is</span> <span class="n">b</span><span class="p">)</span>  <span class="c1"># True，big_int</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>对于浮点数，其引用同样被模块级常量表所持有并复用</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-py" data-lang="py"><span class="line"><span class="cl"><span class="n">a</span> <span class="o">=</span> <span class="mf">1.1</span>
+</span></span><span class="line"><span class="cl"><span class="n">b</span> <span class="o">=</span> <span class="mf">1.1</span>
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="n">a</span> <span class="ow">is</span> <span class="n">b</span><span class="p">)</span>  <span class="c1"># True，float</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>对于非标识字符串，同上</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-py" data-lang="py"><span class="line"><span class="cl"><span class="n">a</span> <span class="o">=</span> <span class="s1">&#39;hello world&#39;</span>  <span class="c1"># 带空格，非标识符字符串</span>
+</span></span><span class="line"><span class="cl"><span class="n">b</span> <span class="o">=</span> <span class="s1">&#39;hello world&#39;</span>
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="n">a</span> <span class="ow">is</span> <span class="n">b</span><span class="p">)</span>  <span class="c1"># True，str</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>对于tuple，同上</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-py" data-lang="py"><span class="line"><span class="cl"><span class="n">a</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">b</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="n">a</span> <span class="ow">is</span> <span class="n">b</span><span class="p">)</span>  <span class="c1"># True，tuple</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">a</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span><span class="p">,[</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">])</span>
+</span></span><span class="line"><span class="cl"><span class="n">b</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span><span class="p">,[</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">])</span>
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="n">a</span> <span class="o">==</span> <span class="n">b</span><span class="p">)</span>  <span class="c1"># True</span>
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="n">a</span> <span class="ow">is</span> <span class="n">b</span><span class="p">)</span>  <span class="c1"># False，tuple不能含有可变元素</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h4 id="例3跨函数字面量复用">例3，跨函数字面量复用
+</h4><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-py" data-lang="py"><span class="line"><span class="cl"><span class="n">x</span> <span class="o">=</span> <span class="mi">999</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">f</span><span class="p">():</span>
+</span></span><span class="line"><span class="cl">    <span class="n">y</span> <span class="o">=</span> <span class="mi">999</span>
+</span></span><span class="line"><span class="cl"><span class="k">return</span> <span class="n">y</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">g</span><span class="p">():</span>
+</span></span><span class="line"><span class="cl">    <span class="n">z</span> <span class="o">=</span> <span class="mi">999</span>
+</span></span><span class="line"><span class="cl"><span class="k">return</span> <span class="n">z</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="n">x</span> <span class="ow">is</span> <span class="n">f</span><span class="p">())</span>  <span class="c1"># True，x与y指向同一整数对象999</span>
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="n">x</span> <span class="ow">is</span> <span class="n">g</span><span class="p">())</span>  <span class="c1"># True，x与z指向同一对象</span>
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="n">f</span><span class="p">()</span> <span class="ow">is</span> <span class="n">g</span><span class="p">())</span>  <span class="c1"># True，y与z指向同一对象</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h4 id="例4跨类字面量复用">例4，跨类字面量复用
+</h4><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-py" data-lang="py"><span class="line"><span class="cl"><span class="n">a</span> <span class="o">=</span> <span class="mi">999</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">class</span> <span class="nc">j</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">    <span class="n">b</span> <span class="o">=</span> <span class="mi">999</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">class</span> <span class="nc">k</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">    <span class="n">c</span> <span class="o">=</span> <span class="mi">999</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="n">a</span> <span class="ow">is</span> <span class="n">j</span><span class="p">()</span><span class="o">.</span><span class="n">b</span><span class="p">)</span>  <span class="c1"># True，a与b指向同一对象</span>
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="n">a</span> <span class="ow">is</span> <span class="n">k</span><span class="p">()</span><span class="o">.</span><span class="n">c</span><span class="p">)</span>  <span class="c1"># True，a与c指向同一对象</span>
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="n">j</span><span class="p">()</span><span class="o">.</span><span class="n">b</span> <span class="ow">is</span> <span class="n">k</span><span class="p">()</span><span class="o">.</span><span class="n">c</span><span class="p">)</span>  <span class="c1"># True，b与c指向同一对象</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>小结：</p>
+<ul>
+<li>在CPython中，模块级常量表串联所有类和函数内部的常量表，它们内部字面量引用均来源于模块级常量表</li>
+<li>对于例2、例3、例4，常量折叠复用字面量相同的对象，严格来讲这叫“常量去重”(constant deduplication)，或字面量复用，它经常和常量折叠同时发生，两者都是优化技术，但二者并不完全等同。</li>
+</ul>
+<h3 id="模块常量表与代码块常量池的关系">模块常量表与代码块常量池的关系
+</h3><ul>
+<li>疑问：既然模块常量表收集所有字面量，为什么还要设计代码块常量池？为什么要区分代码块？</li>
+<li>解释：为了支持局部作用域、闭包、函数对象的独立性，同时共享常量避免重复。每个代码块(函数、类)有自己的<strong>作用域</strong>和局部变量表，<strong>在编译时生成代码对象，常量池就是代码对象的一部分</strong>，用于存储该代码块内使用的常量索引。虽然实际对象<strong>共享引用</strong>，但每个代码块需要记录“<strong>我用到了模块常量表中的第几个常量</strong>”。这种设计<strong>节省内存</strong>，同时<strong>保持代码块的独立性</strong></li>
+</ul>
+<h2 id="关于小整数缓存">关于小整数缓存
+</h2><h3 id="什么是小整数缓存small-integer-cache">什么是小整数缓存(Small Integer Cache)
+</h3><ul>
+<li>定位：小整数缓存是一项优化技术，<strong>是CPython的实现细节，不是语言规范强制要求的</strong></li>
+<li>作用：-5到256的整数对象随CPython启动而创建，当代码使用了它们，Python直接返回缓存中的对象，而非新建</li>
+<li>作用域：全局</li>
+<li>保证性：可靠，<strong>CPython提供实现承诺，在CPython中可放心依赖，但在其他Python实现里可能不保证</strong></li>
+<li>引用池：小整数缓存池，存放-5到256的整数对象</li>
+</ul>
+<h3 id="举例说明小整数缓存">举例说明小整数缓存
+</h3><ul>
+<li>代码如下：</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-py" data-lang="py"><span class="line"><span class="cl"><span class="n">a</span> <span class="o">=</span> <span class="o">-</span><span class="mi">5</span>
+</span></span><span class="line"><span class="cl"><span class="n">b</span> <span class="o">=</span> <span class="o">-</span><span class="mi">5</span>
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="n">a</span> <span class="ow">is</span> <span class="n">b</span><span class="p">)</span>  <span class="c1"># True，small_int</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">a</span> <span class="o">=</span> <span class="mi">256</span>
+</span></span><span class="line"><span class="cl"><span class="n">b</span> <span class="o">=</span> <span class="mi">256</span>
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="n">a</span> <span class="ow">is</span> <span class="n">b</span><span class="p">)</span>  <span class="c1"># True</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h3 id="为什么小整数缓存采用预分配策略">为什么小整数缓存采用预分配策略
+</h3><ul>
+<li>一方面是小整数具有<strong>极高的使用率</strong>，在解释器启动时提前创建，<strong>开销小且复用率高</strong>，可以通过<code>print(sys.getrefcount())</code>来查看小整数的引用计数，会得到一个庞大的数值，极高的引用计数往往意味着极高的使用率</li>
+<li>另一方面是小整数的<strong>数量少且固定</strong>，利用静态数组整合它们，能最大限度节约内存并降低复用难度</li>
+<li>演示代码如下：</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-py" data-lang="py"><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">sys</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">getrefcount</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="关于字符串驻留">关于字符串驻留
+</h2><h3 id="什么是字符串驻留string-interning">什么是字符串驻留(String Interning)
+</h3><ul>
+<li>定位：字符串驻留是一项优化技术，<strong>也是CPython的实现细节</strong></li>
+<li>作用：首次使用时将字符串对象存入全局字典，后续相同字符串则复用同一对象</li>
+<li>作用域：全局</li>
+<li>保证性：部分可靠，标识符字符串可自动驻留，非标识符字符串则依赖于CPython实现细节，也可显式强制驻留</li>
+<li>引用池：字符串驻留池(Intern Pool)，是一个<strong>全局字典</strong>，可通过<code>sys.intern()</code>强制加入</li>
+</ul>
+<h3 id="举例说明字符串驻留的应用">举例说明字符串驻留的应用
+</h3><p>代码如下：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-py" data-lang="py"><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">sys</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">a</span> <span class="o">=</span> <span class="s1">&#39;hello_world&#39;</span>  <span class="c1"># 标识符字符串</span>
+</span></span><span class="line"><span class="cl"><span class="n">b</span> <span class="o">=</span> <span class="s1">&#39;hello_world&#39;</span>
+</span></span><span class="line"><span class="cl"><span class="n">c</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">intern</span><span class="p">(</span><span class="s1">&#39;hello_world&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="n">a</span> <span class="ow">is</span> <span class="n">b</span><span class="p">)</span>  <span class="c1"># True</span>
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="n">a</span> <span class="ow">is</span> <span class="n">c</span><span class="p">)</span>  <span class="c1"># True</span>
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="n">b</span> <span class="ow">is</span> <span class="n">c</span><span class="p">)</span>  <span class="c1"># True</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>可以通过下面的代码到a、b、c在当前模块的全局命名空间里均绑定变量，但这已经是<strong>运行时的变量绑定</strong>，<strong>不是编译时的常量表</strong>(存在于代码对象的<code>co_consts</code>中)。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-py" data-lang="py"><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">sys</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">__main__</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">modules</span><span class="p">[</span><span class="s1">&#39;__main__&#39;</span><span class="p">]</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">)</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>模块本身是全局命名空间的容器，其代码对象是隐式的，没有直接暴露为属性(Attribute)，也就没有类似于函数、类、方法等<strong>可执行体</strong>才会有的<code>__code__</code>属性</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-py" data-lang="py"><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">__main__</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="n">__main__</span><span class="o">.</span><span class="vm">__code__</span><span class="p">)</span>  <span class="c1"># 会报错</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h3 id="为什么字符串驻留采用懒加载策略">为什么字符串驻留采用“懒加载”策略
+</h3><ul>
+<li>因为字符串数量无限，且编译器无法预知什么样的字符串更常用，所以无法像小整数那样提前创先，无法实现预分配</li>
+</ul>
+<h2 id="关于常量去重">关于常量去重
+</h2><h3 id="常量折叠与常量去重的精细区分">常量折叠与常量去重的精细区分
+</h3><p><strong>常量去重是编译器的行为，对象复用是这一行为导致的结果</strong>。常量去重和常量折叠发生在编译时，对象复用发生在运行时</p>
+<p>区分如下：</p>
+<ul>
+<li>常量折叠：对表达式求值（如 2+3→5），产生新的常量值，目的是减少计算量</li>
+<li>常量去重：对于相同字面量，只存一份，目的是减少常量表条目</li>
+<li>对象复用：使运行时的多个变量、表达式结果指向同一个对象（来自常量表或缓存池），目的是共享内存中同一个对象</li>
+</ul>
+<p>注意：运行时的复用（小整数缓存、字符串驻留），它们的作用独立于常量去重</p>
+<h3 id="举个方便理解的栗子">举个方便理解的栗子
+</h3><p>代码如下：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-py" data-lang="py"><span class="line"><span class="cl"><span class="n">a</span> <span class="o">=</span> <span class="mi">2</span><span class="o">+</span><span class="mi">3</span>  <span class="c1"># 常量折叠，产生5，然后去重</span>
+</span></span><span class="line"><span class="cl"><span class="n">b</span> <span class="o">=</span> <span class="mi">5</span>  <span class="c1"># 常量去重</span>
+</span></span><span class="line"><span class="cl"><span class="n">c</span> <span class="o">=</span> <span class="mi">5</span>  <span class="c1"># 常量去重</span>
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="n">a</span> <span class="ow">is</span> <span class="n">b</span><span class="p">)</span>  <span class="c1"># True，对象复用，a和b指向同一对象</span>
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="n">b</span> <span class="ow">is</span> <span class="n">c</span><span class="p">)</span>  <span class="c1"># True，对象复用</span>
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="n">a</span> <span class="ow">is</span> <span class="n">c</span><span class="p">)</span>  <span class="c1"># True，对象复用</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>说明：</p>
+<ul>
+<li>
+<p>这里的<code>2</code>、<code>3</code>、<code>5</code>都是小整数，体现的是小整数缓存的复用效果，换成其他整数（如<code>666</code>、<code>999</code>）或浮点数，那么常量折叠、常量去重和对象复用的效果依然存在</p>
+</li>
+<li>
+<p>编译时发生了常量折叠和常量去重后，常量表条目就只保存一个对象<code>5</code>，运行时的三个变量<code>a</code>、<code>b</code>、<code>c</code>进行了<code>is</code>比较，那么这个<code>5</code>就发生了复用，使得这三个变量共享同一个对象。把这个整数对象换成其他类型的对象，结论依然成立</p>
+</li>
+</ul>
+<h2 id="三个池子设计哲学">三个池子设计哲学
+</h2><h3 id="空白">空白
+</h3>
+</section>
+
+
+    <footer class="article-meta article-footer">
+    
+
+    
+    <section class="article-copyright inline-meta">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-copyright" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <path d="M14.5 9a3.5 4 0 1 0 0 6" />
+</svg>
+
+
+
+        <span>Licensed under <a class="link" href="https://creativecommons.org/licenses/by-nc-sa/4.0/"  target="_blank" rel="noopener"
+    >CC BY-NC-SA 4.0</a></span>
+    </section>
+    </footer>
+
+
+    
+</article>
+
+    
+
+    
+
+     
+    
+        
+
+        <div class="disqus-container">
+    <div id="disqus_thread"></div>
+<script>
+    window.disqus_config = function () {
+    
+    
+    
+    };
+    (function() {
+        if (["localhost", "127.0.0.1"].indexOf(window.location.hostname) != -1) {
+            document.getElementById('disqus_thread').innerHTML = 'Disqus comments not available by default when the website is previewed locally.';
+            return;
+        }
+        var d = document, s = d.createElement('script'); s.async = true;
+        s.src = '//' + "hugo-theme-stack" + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+		<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+		<a href="https://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+	
+</div>
+
+<style>
+    .disqus-container {
+        background-color: var(--card-background);
+        border-radius: var(--card-border-radius);
+        box-shadow: var(--shadow-l1);
+        padding: var(--card-padding);
+    }
+</style>
+
+<script>
+    window.addEventListener('onColorSchemeChange', (e) => {
+        if (typeof DISQUS == 'object') {
+            DISQUS.reset({
+                reload: true
+            });
+        }
+    })
+</script>
+
+    
+
+    <footer class="site-footer">
+    <section class="copyright">
+        &copy; 
+        
+        2026 GennKi-梦心湖
+    </section>
+    
+    <section class="powerby">
+        
+            表达与自由与热烈与简单 <br/>
+        使用 <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> 构建 <br />
+        主题 <b><a href="https://github.com/CaiJimmy/hugo-theme-stack" target="_blank" rel="noopener" data-version="4.0.3">Stack</a></b> 由 <a href="https://jimmycai.com" target="_blank" rel="noopener">Jimmy</a> 设计
+    </section>
+</footer>
+
+
+    
+
+
+
+<script type="module">
+    import gallery from '\/ts\/gallery.js';
+
+    const articleContent = document.querySelector('.article-content');
+    const shouldLoad = articleContent && (articleContent.querySelectorAll('figure').length > 0 || articleContent.querySelectorAll('img.gallery-image').length > 0);
+    
+    if (shouldLoad) {
+        gallery(articleContent);
+
+        const PhotoSwipeLightbox = (await import("https:\/\/cdn.jsdelivr.net\/npm\/photoswipe@5.4.4\/dist\/photoswipe-lightbox.esm.min.js")).default;
+        const styleHref = "https:\/\/cdn.jsdelivr.net\/npm\/photoswipe@5.4.4\/dist\/photoswipe.css";
+
+        const styleTag = document.createElement('link');
+        styleTag.rel = 'stylesheet';
+        styleTag.href = styleHref;
+        document.head.appendChild(styleTag);
+
+        const lightbox = new PhotoSwipeLightbox({
+            gallerySelector: '.article-content',
+            childSelector: 'figure a.image-link',
+            pswpModule: () => import("https:\/\/cdn.jsdelivr.net\/npm\/photoswipe@5.4.4\/dist\/photoswipe.esm.min.js")
+        });
+        lightbox.init();
+    }
+</script>
+
+    
+
+            </main>
+        </div>
+        
+<script type="text/javascript" src="/ts/main.f856840516f7c2ad1769a8f5937e3d08d6cb386e2cd2dd025ae696e0ff207958.js" defer></script>
+
+
+    </body>
+</html>
