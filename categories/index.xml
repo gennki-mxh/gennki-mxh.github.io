@@ -5,13 +5,7 @@
         <description>Recent content in Categories on GennKi-梦心湖</description>
         <generator>Hugo -- gohugo.io</generator>
         <language>en-us</language>
-        <lastBuildDate>Mon, 26 Jan 2026 00:00:00 +0000</lastBuildDate><atom:link href="https://gennki-mxh.github.io/categories/index.xml" rel="self" type="application/rss+xml" /><item>
-            <title>文档</title>
-            <link>https://gennki-mxh.github.io/categories/documentation/</link>
-            <pubDate>Mon, 26 Jan 2026 00:00:00 +0000</pubDate>
-            <guid>https://gennki-mxh.github.io/categories/documentation/</guid>
-            <description>&lt;img src=&#34;https://gennki-mxh.github.io/categories/documentation/hutomo-abrianto-l2jk-uxb1BY-unsplash.jpg&#34; alt=&#34;Featured image of post 文档&#34; /&gt;</description>
-        </item><item>
+        <lastBuildDate>Fri, 14 Aug 2026 11:08:31 +0800</lastBuildDate><atom:link href="https://gennki-mxh.github.io/categories/index.xml" rel="self" type="application/rss+xml" /><item>
             <title>Syntax</title>
             <link>https://gennki-mxh.github.io/categories/syntax/</link>
             <pubDate>Tue, 23 Dec 2025 00:00:00 +0000</pubDate>
@@ -23,5 +17,11 @@
             <pubDate>Tue, 23 Dec 2025 00:00:00 +0000</pubDate>
             <guid>https://gennki-mxh.github.io/categories/themes/</guid>
             <description></description>
+        </item><item>
+            <title>文档</title>
+            <link>https://gennki-mxh.github.io/categories/documentation/</link>
+            <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+            <guid>https://gennki-mxh.github.io/categories/documentation/</guid>
+            <description>&lt;img src=&#34;https://gennki-mxh.github.io/categories/documentation/hutomo-abrianto-l2jk-uxb1BY-unsplash.jpg&#34; alt=&#34;Featured image of post 文档&#34; /&gt;</description>
         </item></channel>
 </rss>
