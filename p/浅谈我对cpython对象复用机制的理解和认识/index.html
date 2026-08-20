@@ -12,7 +12,7 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap">
 
 
-<link rel="stylesheet" href="/scss/style.min.6ad73814b742b1d25219c6fef3d4327ae0a312f611b73e0a278915616a206496.css"><meta property='og:title' content="浅谈我对CPython对象复用机制的理解和认识">
+<link rel="stylesheet" href="/scss/style.min.f457fdbccce9a7bd5a78c7ef4ad105d9426338a097fed2a906636459e85775b9.css"><meta property='og:title' content="浅谈我对CPython对象复用机制的理解和认识">
 <meta property='og:description' content="对象复用的介绍及其分类 什么是对象复用 定位：“对象复用”属于Python运行时的策略，是一种高层设计思路 作用：对于某些不可变对象(int,float,str,tuple&hellip;)，如果值相同，就重复使用而非新建 根本依据：对象的不可变性。只有不可变对象才能安全复用 对象复用的实现方法，按触发方式分类 编译时自动(不可依赖，仅作了解)：常量折叠 运行时自动(CPython中可依赖)：小整数缓存，标识符字符串自动驻留 显式手动(程序员手动)：sys.intern()，强制驻留字符串 关于常量折叠 什么是常量折叠(Constant Folding) 定位：常量折叠是一项编译优化技术，在编译时发挥作用 作用：计算常量表达式(如2+3→5)，并复用相同的字面量对象(如a=257，b=257可能指向同一对象) 依赖：常量折叠依赖于编译单元划分，而编译单元划分依赖于CPython的调用方式(运行脚本或交互模式) 作用域：同一代码块(类、函数、模块顶层、交互式单行语句&hellip;) 保证性：不可靠。编译器不需要保证常量折叠的结果，因为它属于“优化技术”而非“语言规范” 引用池：常量表(Constant Table)，存在于每个代码块中，存放该代码块所有用到的字面量 编译器可自由选择 是否做常量折叠 在多大范围内做(同一行，同一语句，同一函数，同一模块) 是否对字面量进行复用 举例说明常量折叠 声明一下，所有的例子均在同一模块内，通过VSCode调用同一个CPython(3.13)\n">
 <meta property='og:url' content='https://gennki-mxh.github.io/p/%E6%B5%85%E8%B0%88%E6%88%91%E5%AF%B9cpython%E5%AF%B9%E8%B1%A1%E5%A4%8D%E7%94%A8%E6%9C%BA%E5%88%B6%E7%9A%84%E7%90%86%E8%A7%A3%E5%92%8C%E8%AE%A4%E8%AF%86/'>
 <meta property='og:site_name' content='GennKi-梦心湖'>
@@ -937,6 +937,7 @@
         </div>
         
 <script type="text/javascript" src="/ts/main.f856840516f7c2ad1769a8f5937e3d08d6cb386e2cd2dd025ae696e0ff207958.js" defer></script>
+
 <style>
   @font-face {
     font-family: 'love';
@@ -948,6 +949,183 @@
     --code-font-family: 'love';
   }
 </style>
+
+
+<style>
+    #TableOfContents > ul, ol {
+        ul, ol {
+            display: none;
+        }
+        .open {
+            display: block;
+        }
+    }
+</style>
+
+<script>
+    function initTocHide() {
+        
+        let toc = document.querySelector(".widget--toc");
+        if (!toc) {
+            return;
+        }
+        
+        window.addEventListener('scroll', function() {
+            
+            let openUl = document.querySelectorAll(".open");
+            if (openUl.length > 0) {
+              openUl.forEach((ul) => {
+                ul.classList.remove("open")
+              })
+            }
+            
+            let currentLi = document.querySelector(".active-class");
+            if (!currentLi) {
+                return
+            }
+            
+            if (currentLi.children.length > 1) {
+                currentLi.children[1].classList.add("open")
+            }
+            
+            let ul = currentLi.parentElement;
+            do {
+                ul.classList.add("open");
+                ul = ul.parentElement.parentElement
+            } while (ul !== undefined && (ul.localName === 'ul' || ul.localName === 'ol'))
+        });
+    }
+    initTocHide()
+</script>
+
+
+<style>
+    #backTopBtn {
+        display: none;
+        position: fixed;
+        bottom: 30px;
+        z-index: 99;
+        cursor: pointer;
+        width: 30px;
+        height: 30px;
+        background-image: url(https://gennki-mxh.github.io/icons/backTop.svg);
+    }
+</style>
+
+<script>
+    
+
+    function initScrollTop() {
+        let rightSideBar = document.querySelector(".right-sidebar");
+        if (!rightSideBar) {
+            return;
+        }
+        
+        let btn = document.createElement("div");
+        btn.id = "backTopBtn";
+        btn.onclick = backToTop
+        rightSideBar.appendChild(btn)
+        
+        window.onscroll = function() {
+            
+            if (document.body.scrollTop > 20 || document.documentElement.scrollTop > 20) {
+                btn.style.display = "block";
+            } else {
+                btn.style.display = "none";
+            }
+        };
+    }
+
+    
+
+    function backToTop(){
+        window.scrollTo({ top: 0, behavior: "smooth" })
+    }
+
+    initScrollTop();
+</script>
+
+
+<style>
+    .highlight {
+         
+        max-height: 400px;
+        overflow: hidden;
+    }
+
+    .code-show {
+        max-height: none !important;
+    }
+
+    .code-more-box {
+        width: 100%;
+        padding-top: 78px;
+        background-image: -webkit-gradient(linear, left top, left bottom, from(rgba(255, 255, 255, 0)), to(#fff));
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        z-index: 1;
+    }
+
+    .code-more-btn {
+        display: block;
+        margin: auto;
+        width: 44px;
+        height: 22px;
+        background: #f0f0f5;
+        border-top-left-radius: 8px;
+        border-top-right-radius: 8px;
+        padding-top: 6px;
+        cursor: pointer;
+    }
+
+    .code-more-img {
+        cursor: pointer !important;
+        display: block;
+        margin: auto;
+        width: 22px;
+        height: 16px;
+    }
+</style>
+
+<script>
+  function initCodeMoreBox() {
+    let codeBlocks = document.querySelectorAll(".highlight");
+    if (!codeBlocks) {
+      return;
+    }
+    codeBlocks.forEach(codeBlock => {
+      
+      if (codeBlock.scrollHeight <= codeBlock.clientHeight) {
+        return;
+      }
+      
+      
+      let codeMoreBox = document.createElement('div');
+      codeMoreBox.classList.add('code-more-box');
+      
+      let codeMoreBtn = document.createElement('span');
+      codeMoreBtn.classList.add('code-more-btn');
+      codeMoreBtn.addEventListener('click', () => {
+        codeBlock.classList.add('code-show');
+        codeMoreBox.style.display = 'none';
+        
+        window.dispatchEvent(new Event('resize'))
+      })
+      
+      let img = document.createElement('img');
+      img.classList.add('code-more-img');
+      img.src = "https://gennki-mxh.github.io/icons/codeMore.png"
+      
+      codeMoreBtn.appendChild(img);
+      codeMoreBox.appendChild(codeMoreBtn);
+      codeBlock.appendChild(codeMoreBox)
+    })
+  }
+  
+  initCodeMoreBox();
+</script>
 
 
     </body>
