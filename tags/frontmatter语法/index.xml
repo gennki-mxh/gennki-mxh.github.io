@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+    <channel>
+        <title>Frontmatter语法 on GennKi-梦心湖</title>
+        <link>https://gennki-mxh.github.io/tags/frontmatter%E8%AF%AD%E6%B3%95/</link>
+        <description>Recent content in Frontmatter语法 on GennKi-梦心湖</description>
+        <generator>Hugo -- gohugo.io</generator>
+        <language>en-us</language>
+        <lastBuildDate>Sat, 12 Sep 2026 12:11:59 +0800</lastBuildDate><atom:link href="https://gennki-mxh.github.io/tags/frontmatter%E8%AF%AD%E6%B3%95/index.xml" rel="self" type="application/rss+xml" /><item>
+            <title>Frontmatter小知识</title>
+            <link>https://gennki-mxh.github.io/p/frontmatter%E5%B0%8F%E7%9F%A5%E8%AF%86/</link>
+            <pubDate>Mon, 07 Sep 2026 12:06:02 +0800</pubDate>
+            <guid>https://gennki-mxh.github.io/p/frontmatter%E5%B0%8F%E7%9F%A5%E8%AF%86/</guid>
+            <description>&lt;img src=&#34;https://gennki-mxh.github.io/p/frontmatter%E5%B0%8F%E7%9F%A5%E8%AF%86/shinia.jpg&#34; alt=&#34;Featured image of post Frontmatter小知识&#34; /&gt;&lt;h2 id=&#34;frontmatter小知识这里是正文&#34;&gt;Frontmatter小知识，这里是正文&#xA;&lt;/h2&gt;&lt;p&gt;参考官方文档的写法，不论是yaml还是toml的写法，文章的frontmatter里有两个标签需要注意，一个是categories，另一个是tags，它们的值必须是列表，否则会报错&lt;/p&gt;&#xA;&lt;p&gt;&lt;img alt=&#34;图片1&#34; class=&#34;gallery-image&#34; data-flex-basis=&#34;426px&#34; data-flex-grow=&#34;177&#34; height=&#34;1080&#34; loading=&#34;lazy&#34; sizes=&#34;(max-width: 767px) calc(100vw - 30px), (max-width: 1023px) 700px, (max-width: 1279px) 950px, 1232px&#34; src=&#34;https://gennki-mxh.github.io/p/frontmatter%E5%B0%8F%E7%9F%A5%E8%AF%86/shinia.jpg&#34; srcset=&#34;https://gennki-mxh.github.io/p/frontmatter%E5%B0%8F%E7%9F%A5%E8%AF%86/shinia_hu_432720d51018b3b7.jpg 800w, https://gennki-mxh.github.io/p/frontmatter%E5%B0%8F%E7%9F%A5%E8%AF%86/shinia_hu_9aa85600f93716cb.jpg 1600w, https://gennki-mxh.github.io/p/frontmatter%E5%B0%8F%E7%9F%A5%E8%AF%86/shinia.jpg 1920w&#34; width=&#34;1920&#34;&gt;&lt;/p&gt;&#xA;&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;&#xA;&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;&#xA;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1&#xA;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&#xA;&lt;td class=&#34;lntd&#34;&gt;&#xA;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-py&#34; data-lang=&#34;py&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;nb&#34;&gt;print&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s1&#34;&gt;&amp;#39;1234&amp;#39;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;&#xA;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&#xA;&lt;/div&gt;&#xA;&lt;/div&gt;&lt;p&gt;&lt;code&gt;print(&#39;1234&#39;)&lt;/code&gt;&lt;/p&gt;&#xA;</description>
+        </item></channel>
+</rss>
