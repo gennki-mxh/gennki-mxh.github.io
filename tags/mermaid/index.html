@@ -12,7 +12,7 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap">
 
 
-<link rel="stylesheet" href="/scss/style.min.a2905b9753c9043c8c0ea495d6603855e2c3007cdedfdbb259a3236db0c3fc2c.css"><meta property='og:title' content="Mermaid">
+<link rel="stylesheet" href="/scss/style.min.e58a495bf709f0100b9c96e1c2432107d6f148566120bca2d69e0c31407c2d7e.css"><meta property='og:title' content="Mermaid">
 <meta property='og:description' content="欢迎进入我的网站，本站主要分享个人生活记录和学习笔记，敬请期待">
 <meta property='og:url' content='https://gennki-mxh.github.io/tags/mermaid/'>
 <meta property='og:site_name' content='GennKi-梦心湖'>
@@ -289,7 +289,6 @@
     </div>
 </div>
 
-
 <script>
   window.onload = () => {
     initTime();
@@ -320,7 +319,6 @@
     element.style.transform = "rotate(" + deg + "deg)";
   }
 </script>
-</html>
 
 <style>
     .clock-wrapper {
@@ -329,8 +327,11 @@
     width: 460px;   
     height: 460px;   
     zoom: 0.4;   
+    margin: auto;   
+    
     overflow: hidden;
     }
+
     .clock-border {
     position: absolute;
         
@@ -1518,6 +1519,88 @@
             
         
             
+                <section class="count-info">
+  <div>
+      本站稳定运行：
+      <span id="ds" class="running-days number-highlight"></span>
+      天
+  </div>
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  <div>
+      共发表文章数： 
+      <span class="number-highlight">5</span> 
+      篇
+      
+  </div>
+  <div>
+      已发文总字数：
+      <span class="number-highlight">3.75</span> 
+      k 字
+  </div>
+  <div>
+      <span id="busuanzi_container_site_pv">
+          本站总访问量：
+          <span id="busuanzi_value_site_pv" class="number-highlight"></span>
+          次
+      </span>
+  </div>
+</section>
+
+
+<script>
+let s1 = '2026-08-04'; 
+s1 = new Date(s1.replace(/-/g, "/"));
+let s2 = new Date();
+let timeDifference = s2.getTime() - s1.getTime();
+
+let days = Math.floor(timeDifference / (1000 * 60 * 60 * 24));
+let hours = Math.floor((timeDifference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+let minutes = Math.floor((timeDifference % (1000 * 60 * 60)) / (1000 * 60));
+
+
+const ds = document.getElementById('ds');
+const hs = document.getElementById('hs');
+const ms = document.getElementById('ms');
+
+ds.innerHTML = days;
+hs.innerHTML = hours;
+ms.innerHTML = minutes;
+
+
+ds.classList.add('number-highlight');
+hs.classList.add('number-highlight');
+ms.classList.add('number-highlight');
+
+
+const busuanziValue = document.getElementById('busuanzi_value_site_pv');
+if (busuanziValue) {
+    busuanziValue.classList.add('number-highlight');
+}
+</script>
+            
+        
+            
                 <section class="widget archives">
         <div class="widget-icon">
             <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-infinity" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
@@ -1557,48 +1640,6 @@
             
         </div>
     </section>
-            
-        
-            
-                
-<section class="widget tagCloud">
-    <div class="widget-icon">
-        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-hash" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-  <path stroke="none" d="M0 0h24v24H0z"/>
-  <line x1="5" y1="9" x2="19" y2="9" />
-  <line x1="5" y1="15" x2="19" y2="15" />
-  <line x1="11" y1="4" x2="7" y2="20" />
-  <line x1="17" y1="4" x2="13" y2="20" />
-</svg>
-
-
-
-    </div>
-    <h2 class="widget-title section-title">
-        
-            <a href="/categories/">
-                分类
-            </a>
-        
-    </h2>
-
-    <div class="tagCloud-tags">
-        
-            <a href="/categories/documentation/">
-                文档
-            </a>
-        
-            <a href="/categories/syntax/">
-                Syntax
-            </a>
-        
-            <a href="/categories/themes/">
-                Themes
-            </a>
-        
-    </div>
-</section>
-
             
         
     </aside>
