@@ -1,0 +1,1123 @@
+<!DOCTYPE html>
+<html lang="en-us" dir="ltr">
+    <head><meta charset='utf-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content="开发足迹和心路历程 本站从 2026 年 7 月 22 日的一个念头开始，到功能完整的个人博客，历时约 80 天\n这不是教程，而是一份真实的开发日志，记录我的开发体验\n第一阶段：从零到一（7.22 - 8.14） 目标：让博客能跑起来\n">
+<title>足迹/Steps</title>
+
+
+<link rel="canonical" href="https://gennki-mxh.github.io/%E8%B6%B3%E8%BF%B9-steps/">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap">
+
+
+<link rel="stylesheet" href="/scss/style.min.07bf6157c726998dfaa894113bdb4e9f598e4807e00a5336f8751ecb959d9e4a.css"><meta property='og:title' content="足迹/Steps">
+<meta property='og:description' content="开发足迹和心路历程 本站从 2026 年 7 月 22 日的一个念头开始，到功能完整的个人博客，历时约 80 天\n这不是教程，而是一份真实的开发日志，记录我的开发体验\n第一阶段：从零到一（7.22 - 8.14） 目标：让博客能跑起来\n">
+<meta property='og:url' content='https://gennki-mxh.github.io/%E8%B6%B3%E8%BF%B9-steps/'>
+<meta property='og:site_name' content='GennKi-梦心湖'>
+<meta property='og:type' content='article'><meta property='article:section' content='Page' /><meta property='article:modified_time' content='2026-11-06T12:12:52&#43;08:00'/>
+<meta name="twitter:title" content="足迹/Steps">
+<meta name="twitter:description" content="开发足迹和心路历程 本站从 2026 年 7 月 22 日的一个念头开始，到功能完整的个人博客，历时约 80 天\n这不是教程，而是一份真实的开发日志，记录我的开发体验\n第一阶段：从零到一（7.22 - 8.14） 目标：让博客能跑起来\n">
+    <link rel="shortcut icon" href="/img/avatar.png" />
+
+    </head>
+    <body class="
+    article-page
+    ">
+    <script>
+        (function() {
+            const colorSchemeKey = 'StackColorScheme';
+            if(!localStorage.getItem(colorSchemeKey)){
+                localStorage.setItem(colorSchemeKey, "auto");
+            }
+        })();
+    </script><script>
+    (function() {
+        const colorSchemeKey = 'StackColorScheme';
+        const colorSchemeItem = localStorage.getItem(colorSchemeKey);
+        const supportDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches === true;
+
+        if (colorSchemeItem == 'dark' || colorSchemeItem === 'auto' && supportDarkMode) {
+            
+
+            document.documentElement.dataset.scheme = 'dark';
+        } else {
+            document.documentElement.dataset.scheme = 'light';
+        }
+    })();
+</script>
+<div class="container main-container flex on-phone--column extended"><aside class="sidebar left-sidebar sticky ">
+    <button class="hamburger hamburger--spin" type="button" id="toggle-menu" aria-label="切换菜单">
+        <span class="hamburger-box">
+            <span class="hamburger-inner"></span>
+        </span>
+    </button>
+
+    <header>
+        <figure class="site-avatar">
+                <a href="/">
+                    <img src="/img/avatar.png" 
+                        width="150"
+                        height="149"
+                        class="site-logo"
+                        loading="lazy"
+                        alt="Avatar">
+                </a>
+                
+                    <span class="emoji">😘</span>
+                
+            </figure>
+        
+        
+        <div class="site-meta">
+            <h1 class="site-name"><a href="/">GennKi-梦心湖</a></h1>
+            <h2 class="site-description">本站主要分享个人生活记录和学习笔记，欢迎光临，敬请期待</h2>
+        </div>
+    </header><ol class="menu-social">
+            
+                <li>
+                    <a 
+                        href='https://space.bilibili.com/178730039'
+                        
+                        title="Bilibili"
+                        rel="me"
+                    >
+                        
+                        
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-brand-bilibili"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M3 10a4 4 0 0 1 4 -4h10a4 4 0 0 1 4 4v6a4 4 0 0 1 -4 4h-10a4 4 0 0 1 -4 -4v-6" /><path d="M8 3l2 3" /><path d="M16 3l-2 3" /><path d="M9 13v-2" /><path d="M15 11v2" /></svg>
+                        
+                    </a>
+                </li>
+            
+                <li>
+                    <a 
+                        href='https://github.com/gennki-mxh'
+                        
+                        title="GitHub"
+                        rel="me"
+                    >
+                        
+                        
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-brand-github" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+  <path d="M9 19c-4.3 1.4 -4.3 -2.5 -6 -3m12 5v-3.5c0 -1 .1 -1.4 -.5 -2c2.8 -.3 5.5 -1.4 5.5 -6a4.6 4.6 0 0 0 -1.3 -3.2a4.2 4.2 0 0 0 -.1 -3.2s-1.1 -.3 -3.5 1.3a12.3 12.3 0 0 0 -6.2 0c-2.4 -1.6 -3.5 -1.3 -3.5 -1.3a4.2 4.2 0 0 0 -.1 3.2a4.6 4.6 0 0 0 -1.3 3.2c0 4.6 2.7 5.7 5.5 6c-.6 .6 -.6 1.2 -.5 2v3.5" />
+</svg>
+
+
+
+                        
+                    </a>
+                </li>
+            
+        </ol><ol class="menu" id="main-menu">
+        
+        
+        
+        <li >
+            <a href='/%E5%85%B3%E4%BA%8E-about/' >
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-user" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="7" r="4" />
+  <path d="M6 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2" />
+</svg>
+
+
+
+                
+                <span>关于/About</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/' >
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-home" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <polyline points="5 12 3 12 12 3 21 12 19 12" />
+  <path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-7" />
+  <path d="M9 21v-6a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2v6" />
+</svg>
+
+
+
+                
+                <span>主页/Home</span>
+            </a>
+        </li>
+        
+        
+        <li  class='current'>
+            <a href='/%E8%B6%B3%E8%BF%B9-steps/' >
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-footsteps"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M4 16.5a2.5 2.5 0 0 0 5 0a1.5 1.5 0 0 0 -1.5 -1.5h-2a1.5 1.5 0 0 0 -1.5 1.5" /><path d="M15 18.5a2.5 2.5 0 0 0 5 0a1.5 1.5 0 0 0 -1.5 -1.5h-2a1.5 1.5 0 0 0 -1.5 1.5" /><path d="M8.52 12h-4.04c-.348 0 -.678 -.179 -.823 -.496c-1.326 -2.904 -.774 -8.504 2.843 -8.504s4.17 5.6 2.843 8.504c-.145 .317 -.475 .496 -.824 .496" /><path d="M19.52 14h-4.04c-.348 0 -.678 -.179 -.823 -.496c-1.326 -2.904 -.774 -8.504 2.843 -8.504s4.17 5.6 2.843 8.504c-.145 .317 -.475 .496 -.824 .496" /></svg>
+                
+                <span>足迹/Steps</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/%E5%8E%86%E5%8F%B2%E5%85%AC%E5%91%8A/' >
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-speakerphone"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M18 8a3 3 0 0 1 0 6" /><path d="M10 8v11a1 1 0 0 1 -1 1h-1a1 1 0 0 1 -1 -1v-5" /><path d="M12 8l4.524 -3.77a.9 .9 0 0 1 1.476 .692v12.156a.9 .9 0 0 1 -1.476 .692l-4.524 -3.77h-8a1 1 0 0 1 -1 -1v-4a1 1 0 0 1 1 -1h8" /></svg>
+                
+                <span>公告/History</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/archives/' >
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-archive" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <rect x="3" y="4" width="18" height="4" rx="2" />
+  <path d="M5 8v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-10" />
+  <line x1="10" y1="12" x2="14" y2="12" />
+</svg>
+
+
+
+                
+                <span>归档/Archives</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/search/' >
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="10" cy="10" r="7" />
+  <line x1="21" y1="21" x2="15" y2="15" />
+</svg>
+
+
+
+                
+                <span>搜索/Search</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/%E5%8F%8B%E9%93%BE-links/' >
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-link" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <path d="M10 14a3.5 3.5 0 0 0 5 0l4 -4a3.5 3.5 0 0 0 -5 -5l-.5 .5" />
+  <path d="M14 10a3.5 3.5 0 0 0 -5 0l-4 4a3.5 3.5 0 0 0 5 5l.5 -.5" />
+</svg>
+
+
+
+                
+                <span>友链/Links</span>
+            </a>
+        </li>
+        
+        <li class="menu-bottom-section">
+            <ol class="menu">
+
+                
+                    <li id="dark-mode-toggle">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="8" cy="12" r="2" />
+  <rect x="2" y="6" width="20" height="12" rx="6" />
+</svg>
+
+
+
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-right" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="16" cy="12" r="2" />
+  <rect x="2" y="6" width="20" height="12" rx="6" />
+</svg>
+
+
+
+                        <span>暗色模式</span>
+                    </li>
+                
+            </ol>
+        </li>
+    </ol>
+</aside>
+
+    <aside class="sidebar right-sidebar sticky">
+        
+            
+                
+    <section class="widget archives">
+        <div class="widget-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-hash" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <line x1="5" y1="9" x2="19" y2="9" />
+  <line x1="5" y1="15" x2="19" y2="15" />
+  <line x1="11" y1="4" x2="7" y2="20" />
+  <line x1="17" y1="4" x2="13" y2="20" />
+</svg>
+
+
+
+        </div>
+        <h2 class="widget-title section-title">目录</h2>
+        
+        <div class="widget--toc">
+            <nav class="toc-nav" id="TableOfContents">
+                
+  <ol>
+    <li><a href="#第一阶段从零到一722---814">第一阶段：从零到一（7.22 - 8.14）</a></li>
+    <li><a href="#第二阶段功能搭建815---913">第二阶段：功能搭建（8.15 - 9.13）</a></li>
+    <li><a href="#第三阶段深度美化与细节打磨921---1018">第三阶段：深度美化与细节打磨（9.21 - 10.18）</a></li>
+    <li><a href="#第四阶段平稳运行与内容沉淀1019---至今">第四阶段：平稳运行与内容沉淀（10.19 - 至今）</a></li>
+    <li><a href="#提交记录和开发体验">提交记录和开发体验</a>
+      <ol>
+        <li><a href="#七月探索与试错">七月：探索与试错</a></li>
+        <li><a href="#八月正式构建">八月：正式构建</a></li>
+        <li><a href="#九月功能完善与学习过渡">九月：功能完善与学习过渡</a></li>
+        <li><a href="#十月深度美化与细节打磨">十月：深度美化与细节打磨</a></li>
+        <li><a href="#十一月平稳运行">十一月：平稳运行</a></li>
+      </ol>
+    </li>
+  </ol>
+
+            </nav>
+        </div>
+    </section>
+
+            
+        
+    </aside>
+
+
+            <main class="main full-width">
+    <article class="main-article">
+    <header class="article-header">
+
+    <div class="article-details">
+    
+
+    <div class="article-title-wrapper">
+        <h2 class="article-title">
+            <a href="/%E8%B6%B3%E8%BF%B9-steps/">足迹/Steps</a>   
+        </h2>
+    
+        
+    </div>
+
+    
+    
+    
+    
+    
+    
+    
+    
+</div>
+
+</header>
+
+    
+    <aside class="article-toc">
+        <details>
+            <summary>
+                <div class="article-toc-title">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-chevron-right"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M9 6l6 6l-6 6" /></svg>
+                    <span>目录</span>
+                </div>
+            </summary>
+            <nav class="toc-nav">
+                
+  <ol>
+    <li><a href="#第一阶段从零到一722---814">第一阶段：从零到一（7.22 - 8.14）</a></li>
+    <li><a href="#第二阶段功能搭建815---913">第二阶段：功能搭建（8.15 - 9.13）</a></li>
+    <li><a href="#第三阶段深度美化与细节打磨921---1018">第三阶段：深度美化与细节打磨（9.21 - 10.18）</a></li>
+    <li><a href="#第四阶段平稳运行与内容沉淀1019---至今">第四阶段：平稳运行与内容沉淀（10.19 - 至今）</a></li>
+    <li><a href="#提交记录和开发体验">提交记录和开发体验</a>
+      <ol>
+        <li><a href="#七月探索与试错">七月：探索与试错</a></li>
+        <li><a href="#八月正式构建">八月：正式构建</a></li>
+        <li><a href="#九月功能完善与学习过渡">九月：功能完善与学习过渡</a></li>
+        <li><a href="#十月深度美化与细节打磨">十月：深度美化与细节打磨</a></li>
+        <li><a href="#十一月平稳运行">十一月：平稳运行</a></li>
+      </ol>
+    </li>
+  </ol>
+
+            </nav>
+        </details>
+    </aside>
+    
+
+    <section class="article-content">
+    
+    
+    <h1 id="开发足迹和心路历程">开发足迹和心路历程
+</h1>
+    <blockquote>
+        <p>本站从 2026 年 7 月 22 日的一个念头开始，到功能完整的个人博客，历时约 80 天</p>
+
+    </blockquote>
+
+    <blockquote>
+        <p>这不是教程，而是一份真实的开发日志，记录我的开发体验</p>
+
+    </blockquote>
+<h2 id="第一阶段从零到一722---814">第一阶段：从零到一（7.22 - 8.14）
+</h2><p><strong>目标</strong>：让博客能跑起来</p>
+<p><strong>动作</strong>：搭建 Hugo 环境 → 选定 Stack 主题 → 跑通最小模型 → 处理版本差异</p>
+
+    <blockquote>
+        <p><strong>收获</strong>：先跑通最小模型，再回头补理论。选对主题和教程比盲目照抄更重要</p>
+
+    </blockquote>
+<p><strong>关键节点</strong>：</p>
+<ul>
+<li><strong>7.22</strong> 决定搭建静态博客</li>
+<li><strong>7.23</strong> <strong>跑通 Hugo 最小可执行模型</strong></li>
+<li><strong>7.29</strong> 选择 Stack 主题，踩坑：教程版本与实际版本脱节
+
+    <blockquote>
+        <p>参考大佬的博客：<a class="link" href="https://letere-gzj.github.io/hugo-stack/"  target="_blank" rel="noopener"
+    >莱特雷-letere</a>。</p>
+
+    </blockquote>
+</li>
+<li><strong>7.30</strong>: <strong>安装 Stack 主题后构建报错</strong>
+
+    <blockquote>
+        <p>在 AI 辅助下根据错误信息，定位出问题的代码，修改后成功构建</p>
+
+    </blockquote>
+</li>
+<li><strong>8.14</strong> <strong>实现源码与静态页面分仓管理</strong></li>
+</ul>
+<hr>
+<h2 id="第二阶段功能搭建815---913">第二阶段：功能搭建（8.15 - 9.13）
+</h2><p><strong>目标</strong>：让博客可用、可看</p>
+<p><strong>动作</strong>：选择参考教程 → 移植功能 → 记录问题 → 本地测试通过 → 上传 GitHub 仓库</p>
+
+    <blockquote>
+        <p><strong>收获</strong>：美化和测试需要时间，但每一步都能看到变化</p>
+
+    </blockquote>
+<p><strong>关键节点</strong>：</p>
+<ul>
+<li><strong>8.7</strong> 发布第一篇文章</li>
+<li><strong>8.16</strong> 增加评论功能</li>
+<li><strong>8.25</strong> 引入浏览量统计</li>
+<li><strong>9.9</strong> <strong>美化文章列表和正文图片的圆角与悬停动画</strong>
+
+    <blockquote>
+        <p><strong>排查思路</strong>：定位元素DOM层级 → 复制选择器 → 本地测试css属性 → 覆盖原样式</p>
+
+    </blockquote>
+</li>
+<li><strong>9.13</strong> 增加右侧栏归档、分类悬停缩放动效；清理测试文件，修正工作流构建命令
+
+    <blockquote>
+        <p><strong>排查思路</strong>：<code>run hugo -D</code> → <code>run hugo</code>，避免草稿泄露和工作流卡住</p>
+
+    </blockquote>
+</li>
+</ul>
+<hr>
+<h2 id="第三阶段深度美化与细节打磨921---1018">第三阶段：深度美化与细节打磨（9.21 - 10.18）
+</h2><p><strong>目标</strong>：让博客从“能用”变成“好用、好看”，深度还原参考博客外观样式</p>
+<p><strong>动作</strong>：学习 HTML/CSS 基础 → 用开发者工具定位样式 → 逐条覆盖主题默认样式 → 修复历史遗留 Bug → 总结成可复用的 SOP</p>
+
+    <blockquote>
+        <p><strong>收获</strong>：曾经无法解决的问题，现在大多是 CSS 属性的问题。<strong>开发者工具是排查问题的神器</strong></p>
+
+    </blockquote>
+<p><strong>关键节点</strong>：</p>
+<ul>
+<li><strong>9.21 至 10.2</strong>：<strong>学习 HTML/CSS 基础，整理笔记，为深度美化做理论储备</strong></li>
+<li><strong>10.6</strong> 页脚增加运行时间、文章统计和访问量；修复时钟不居中；修改部分注释
+
+    <blockquote>
+        <p><strong>排查思路</strong>：登录 vercount 后台配置站点 ID 信息；时钟居中实际上是 css 属性问题</p>
+
+    </blockquote>
+</li>
+<li><strong>10.8</strong> 美化菜单和全局滚动条；引入飞鱼页脚；返回顶部图标悬停旋转；<strong>修复动态背景半屏问题</strong>；<strong>修复时钟亮暗主题变色问题</strong>
+
+    <blockquote>
+        <p><strong>排查思路</strong>：参考大佬博客 → 定位 DOM 层级 → 新建样式规则 → 测试通过后写入 <code>.scss</code></p>
+
+    </blockquote>
+</li>
+<li><strong>10.10</strong> 浏览量图标移至页脚并统一风格；返回顶部图标适配暗色主题；调整页脚布局；更新友链</li>
+<li><strong>10.18</strong> 更新“对象复用”文章内容、排版，新增封面；<strong>归档页新增“Python”分类页面和标识</strong>；<strong>新增主页动态公告</strong>；优化其他细节</li>
+</ul>
+<hr>
+<h2 id="第四阶段平稳运行与内容沉淀1019---至今">第四阶段：平稳运行与内容沉淀（10.19 - 至今）
+</h2><p><strong>状态</strong>：从重度开发转向日常维护与内容输出</p>
+<p><strong>关键节点</strong>：</p>
+<ul>
+<li><strong>10.19</strong>：总结、沉淀，开始写下年度复盘长文</li>
+<li><strong>10.20</strong>：开始投递简历，将博客作为核心作品对外展示</li>
+<li><strong>10.23</strong>：<strong>跑通第一个 Flask API 接口，正式开启后端探索</strong></li>
+<li><strong>10.25</strong>：<strong>用时 5 天、耗尽了上万字废稿，浓缩而成的 3900 字心路历程《转行一周年：从 Hello World 到求职市场》</strong></li>
+<li><strong>10.26</strong>：重构 Hugo 分类系统，修复 URL 编码冲突与双生页面问题；抽离首页公告模块，实现数据与视图分离</li>
+</ul>
+
+    <blockquote>
+        <p><strong>收获</strong>：我意识到，最好的输入是输出。博客不再只是我的“作业”，它已经成为了我与真实世界交互的底气。</p>
+
+    </blockquote>
+<hr>
+<h2 id="提交记录和开发体验">提交记录和开发体验
+</h2><h3 id="七月探索与试错">七月：探索与试错
+</h3><ul>
+<li><strong>2026-07-22</strong>: 决定搭建静态博客
+
+    <blockquote>
+        <p>筛选 AI 给的建议，结合“深度思考”的和“问题导向”的学习风格，决定用小白友好、轻量静态博客展示学习成果</p>
+
+    </blockquote>
+</li>
+<li><strong>2026-07-23</strong>: <strong>跑通最小可执行模型</strong>
+
+    <blockquote>
+        <p>用 Hugo + 默认主题，走完“构建 → 发布 post”的最小流程</p>
+
+    </blockquote>
+</li>
+<li><strong>2026-07-25</strong>: 选择一款高二次元风格的博客主题
+
+    <blockquote>
+        <p>本地根目录命名为 <code>test</code>，选了合眼缘的二次元主题，但构建完就不知道下一步做什么了</p>
+
+    </blockquote>
+</li>
+<li><strong>2026-07-26</strong>: 踩坑：教程太多，质量参差
+
+    <blockquote>
+        <p>找到 Stack 主题的视频教程，但每个 up 主操作不同，对小白不友好；最后找到一个手把手教学的视频</p>
+
+    </blockquote>
+</li>
+<li><strong>2026-07-27</strong>: 万事开头难，先从 GitHub 入门开始
+
+    <blockquote>
+        <p>放弃长教程，从短教程入手。浏览 GitHub 入门，更新个人档案，逛逛 Topics 和 awesome list</p>
+
+    </blockquote>
+</li>
+<li><strong>2026-07-28</strong>: 看视频学习如何自动部署
+
+    <blockquote>
+        <p>看懂六七成，边操作边理解。直接用民间改良版工作流文件，不硬啃官方文档</p>
+
+    </blockquote>
+</li>
+<li><strong>2026-07-29</strong>: 选择 Stack 主题，踩坑：教程版本与实际版本脱节
+
+    <blockquote>
+        <p>创建 <code>dev/</code> 测试主题，发现教程与当前版本差异大，无法一比一照抄，需要自己熟悉配置文件</p>
+
+    </blockquote>
+</li>
+<li><strong>2026-07-30</strong>: <strong>安装 Stack 主题后构建报错</strong>
+
+    <blockquote>
+        <p>在 AI 辅助下处理 <code>command error: failed to load modules</code>，发现 <code>[[module.imports]]</code> 的 <code>path</code> 指向失效，改为 <code>path = &quot;hugo-theme-stack&quot;</code> 后成功构建</p>
+
+    </blockquote>
+</li>
+</ul>
+<hr>
+<h3 id="八月正式构建">八月：正式构建
+</h3><ul>
+<li><strong>2026-08-01</strong>: 重新跑一遍最小可执行模型</li>
+<li><strong>2026-08-02</strong>: <strong>认识到选择对的主题和教程的重要性</strong>
+
+    <blockquote>
+        <p>实现同一个功能的思路大差不差，但具体实现细节千差万别，难以照抄</p>
+
+    </blockquote>
+</li>
+<li><strong>2026-08-04</strong>: <strong>解决了一个教程里没提的奇怪问题</strong>
+
+    <blockquote>
+        <p><strong>排查思路</strong>：语言配置问题，尝试更新主题版本、禁用语言切换均无效，最终删除 <code>content/</code> 下多余的语言首页文件解决。困扰我三天这个问题</p>
+
+    </blockquote>
+</li>
+<li><strong>2026-08-05</strong>: 更新站点头像、网站图标、用户名等信息
+
+    <blockquote>
+        <p>修改了 <code>menu.toml</code>（左侧栏小图标和链接）、<code>language.toml</code>（语言配置和用户名）、<code>params.toml</code>（头像、小表情、站点介绍）</p>
+
+    </blockquote>
+</li>
+<li><strong>2026-08-07</strong>: 发布第一篇学习笔记“对象复用”
+
+    <blockquote>
+        <p>按 markdown 写完后发现排版丑，VSCode 预览与网页显示有轻微差异</p>
+
+    </blockquote>
+</li>
+<li><strong>2026-08-08</strong>: 优化文章排版
+
+    <blockquote>
+        <p>用围栏式代码块替换缩进代码块，调试视觉效果</p>
+
+    </blockquote>
+</li>
+<li><strong>2026-08-10</strong>: 补充文章内容，调整叙述方式
+
+    <blockquote>
+        <p>把认识和理解掰开揉碎，讲给小白读者</p>
+
+    </blockquote>
+</li>
+<li><strong>2026-08-12</strong>: 移除右侧栏标签和分类小组件
+
+    <blockquote>
+        <p>在 <code>params.toml</code> 找到开关；在 <code>[footer]</code> 加 <code>customText</code> 字段并看到效果，但对其余“开关”仍困惑</p>
+
+    </blockquote>
+</li>
+<li><strong>2026-08-14</strong>: <strong>实现源码与静态页面分仓管理</strong>
+
+    <blockquote>
+        <p>搞懂自动部署，停用 <code>dev</code>，正式构建本站 <code>myHugo</code>，推送第一个提交 <code>&quot;first commit&quot;</code></p>
+
+    </blockquote>
+</li>
+<li><strong>2026-08-15</strong>: 更新个人资料并调整页面布局；发布文章 &ldquo;Object Reuse&rdquo;
+
+    <blockquote>
+        <p>有了上次修改的经验，这次快速复现之前效果，学习分段提交和常用前缀</p>
+
+    </blockquote>
+</li>
+<li><strong>2026-08-16</strong>：增加评论功能，开启评论区
+
+    <blockquote>
+        <p>安装 giscus app → 设置提醒类型 → 填入 <code>repo</code> 等信息 → 测试报错 <code>Unable to create discussion</code></p>
+
+    </blockquote>
+</li>
+<li><strong>2026-08-17</strong>：修复无法创建评论的问题
+
+    <blockquote>
+        <p>补全 <code>categories</code> 等字段后评论正常</p>
+
+    </blockquote>
+</li>
+<li><strong>2026-08-18</strong>：更新博客字体、鼠标指针、左侧菜单选项名称</li>
+<li><strong>2026-08-19</strong>：新增文章显示最后一次更新时间的功能（页脚）</li>
+<li><strong>2026-08-20</strong>：新增友链归档多列显示；目录折叠；返回顶部按钮；自定义 MD 引用块颜色；代码块折叠</li>
+<li><strong>2026-08-21</strong>：增加动态背景“点线漂浮”(<code>particles.js</code>)，半屏状态下显示异常
+
+    <blockquote>
+        <p>动态背景没有铺满浏览器，缩放时出现上下分层现象，已记录该问题</p>
+
+    </blockquote>
+</li>
+<li><strong>2026-08-25</strong>：引入浏览量统计(<code>vercount</code>)，隐藏主页文章卡片浏览量
+
+    <blockquote>
+        <p>列表页浏览量读数不正确，隐藏主页文章卡片上的统计</p>
+
+    </blockquote>
+</li>
+<li><strong>2026-08-29</strong>：增加字数统计功能</li>
+<li><strong>2026-08-31</strong>：增加显示文章 <code>frontmatter</code> 自定义字段功能</li>
+</ul>
+<hr>
+<h3 id="九月功能完善与学习过渡">九月：功能完善与学习过渡
+</h3><ul>
+<li><strong>2026-09-01</strong>：创建复用模板，增加 <code>frontmatter</code> 自定义字段在页脚的显示功能</li>
+<li><strong>2026-09-04</strong>：新增右侧栏时钟小组件，但显示效果不太行
+
+    <blockquote>
+        <p>切换亮暗主题时时钟颜色不跟随变化，已记录该问题</p>
+
+    </blockquote>
+</li>
+<li><strong>2026-09-05</strong>：增加主页左侧栏“更新日志/Logs”项，修改权重和文章列表显示数量</li>
+<li><strong>2026-09-06</strong>：<strong>整理笔记，参考多个博主，找到想要的视觉效果和实现方法</strong>
+
+    <blockquote>
+        <p><strong>博客开发到达瓶颈期，决定不再一比一照抄，只选需要的功能</strong></p>
+
+    </blockquote>
+</li>
+<li><strong>2026-09-07</strong>：新增文章“frontmatter 小知识”，修改测试文章的 <code>tags</code> 和 <code>categories</code></li>
+<li><strong>2026-09-09</strong>：美化首页文章列表（图片圆角、悬停动画）；优化文章正文图片圆角</li>
+<li><strong>2026-09-10</strong>：增加全局配置，优化文章内代码块、图片、引用等元素的显示效果</li>
+<li><strong>2026-09-11</strong>：增加文章详细页“相关文章”功能</li>
+<li><strong>2026-09-12</strong>：美化底部“相关文章”（圆角、悬浮缩放），终于能用了</li>
+<li><strong>2026-09-13</strong>：增加右侧栏归档、分类悬停缩放动效；清理测试文件；修正构建命令
+
+    <blockquote>
+        <p><strong>排查思路</strong>：<code>run hugo -D</code> → <code>run hugo</code>，避免草稿泄露和工作流卡住</p>
+
+    </blockquote>
+</li>
+<li><strong>2026-09-21 至 10-02</strong>：<strong>学习 HTML/CSS 基础，整理笔记，为深度美化做理论储备</strong>
+
+    <blockquote>
+        <p>这段时间没有形成正式提交，系统学习 CSS 选择器、开发者工具、盒模型、继承与优先级，并用开发者工具做了少量样式实验</p>
+
+    </blockquote>
+</li>
+</ul>
+<hr>
+<h3 id="十月深度美化与细节打磨">十月：深度美化与细节打磨
+</h3><ul>
+<li><strong>2026-10-02</strong>：为左侧菜单项添加悬停动画（字体颜色、社交图标旋转）</li>
+<li><strong>2026-10-05</strong>：增加鼠标悬浮头像旋转；友链和归档从两列增至三列；调整 TOC 间距；增加首页欢迎横幅</li>
+<li><strong>2026-10-06</strong>：页脚增加运行时间、文章统计和访问量；修复时钟不居中；修改部分注释</li>
+<li><strong>2026-10-07</strong>：时钟悬停缩放；本地开发不加载 vercount 脚本；站点数据统计和归档悬停变色</li>
+<li><strong>2026-10-08</strong>：美化菜单和全局滚动条；引入飞鱼页脚；返回顶部图标悬停旋转；<strong>修复动态背景半屏问题</strong>；<strong>修复时钟亮暗主题变色问题</strong>
+
+    <blockquote>
+        <p><strong>排查思路</strong>：参考大佬博客 → 定位 DOM 层级 → 新建样式规则 → 测试通过后写入 <code>.scss</code></p>
+
+    </blockquote>
+</li>
+<li><strong>2026-10-09</strong>：修复文章列表和详细页顶部日期行多余符号，修改部分 HTML 注释</li>
+<li><strong>2026-10-10</strong>：浏览量图标移至页脚并统一风格；返回顶部图标适配暗色主题；调整页脚布局；更新友链</li>
+<li><strong>2026-10-11</strong>：增加友链图标动态更新；重新开启右侧栏分类；开启文章卡片顶部阅读时间，关闭顶部更新显示</li>
+<li><strong>2026-10-12</strong>：<strong>为每篇文章增加字数、浏览量、更新时间的独立开关</strong>；将“日志/Logs”重命名为“足迹/Steps”</li>
+<li><strong>10-13 至 10-15</strong>：<strong>更新“足迹/Steps”内容</strong>，从初稿到摘要、阶段概述、按月份分组的完整结构，反复精简和排版优化</li>
+<li><strong>2026-10-17</strong>：完成“关于/About”内容及排版</li>
+<li><strong>2026-10-18</strong>：更新“对象复用”文章内容、排版，新增封面；归档页新增“Python”分类页面和标识；新增主页动态公告；优化其他细节</li>
+<li><strong>10-19 至 10-24</strong>：过去一年进行复盘沉淀，从初稿到终稿，开始投简历，接触真实的市场需求</li>
+<li><strong>2026-10-25</strong>：发布年度深度复盘长文《转行一周年：从 Hello World 到求职市场》</li>
+<li><strong>2026-10-26</strong>：修复 Hugo Taxonomy 引起的分类页双生URL问题，统一用英文命名目录并在 title 中显示中文；抽离首页公告模块，实现数据与视图分离；新增“关于/About”时间线内容；新增“足迹/Steps”第四阶段（平稳运行）
+
+    <blockquote>
+        <p><strong>排查思路</strong>：参考大佬博客 → 定位 categories 目录 → 匹配文章自定义的 categories  → 统一用英文表示 → index.md文件 title 用中文</p>
+
+    </blockquote>
+</li>
+</ul>
+<hr>
+<h3 id="十一月平稳运行">十一月：平稳运行
+</h3><ul>
+<li><strong>2026-11-06</strong>：发布文章《看答案能懂，自己写就懵？我从零推导了 trim() 函数》；更新文章分类标签与 slug 配置，统一规范历史文章 slug，优化路径结构；更新足迹和关于我内容；更新工作流文件内容</li>
+</ul>
+
+</section>
+
+
+    
+<footer class="article-meta article-footer">
+    
+
+    
+    
+
+    
+    
+
+    
+    
+
+    
+    
+
+    <section class="article-lastmod inline-meta">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <polyline points="12 7 12 12 15 15" />
+</svg>
+
+
+
+        <span>
+            最后更新于 2026-11-06
+        </span>
+    </section>
+    
+</footer>
+
+
+    
+</article>
+
+    
+
+    
+
+     
+    
+
+    <footer class="site-footer">
+    <section class="copyright">
+        &copy; 
+        
+        2026 GennKi-梦心湖
+    </section>
+    
+    <section class="powerby">
+        使用 <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> 构建 <br />
+        主题 <b><a href="https://github.com/CaiJimmy/hugo-theme-stack" target="_blank" rel="noopener" data-version="4.0.3">Stack</a></b> 由 <a href="https://jimmycai.com" target="_blank" rel="noopener">Jimmy</a> 设计，由 GennKi-梦心湖 魔改
+    </section>
+</footer>
+
+
+    
+
+
+
+<script type="module">
+    import gallery from '\/ts\/gallery.js';
+
+    const articleContent = document.querySelector('.article-content');
+    const shouldLoad = articleContent && (articleContent.querySelectorAll('figure').length > 0 || articleContent.querySelectorAll('img.gallery-image').length > 0);
+    
+    if (shouldLoad) {
+        gallery(articleContent);
+
+        const PhotoSwipeLightbox = (await import("https:\/\/cdn.jsdelivr.net\/npm\/photoswipe@5.4.4\/dist\/photoswipe-lightbox.esm.min.js")).default;
+        const styleHref = "https:\/\/cdn.jsdelivr.net\/npm\/photoswipe@5.4.4\/dist\/photoswipe.css";
+
+        const styleTag = document.createElement('link');
+        styleTag.rel = 'stylesheet';
+        styleTag.href = styleHref;
+        document.head.appendChild(styleTag);
+
+        const lightbox = new PhotoSwipeLightbox({
+            gallerySelector: '.article-content',
+            childSelector: 'figure a.image-link',
+            pswpModule: () => import("https:\/\/cdn.jsdelivr.net\/npm\/photoswipe@5.4.4\/dist\/photoswipe.esm.min.js")
+        });
+        lightbox.init();
+    }
+</script>
+
+    
+
+            </main>
+        </div>
+        
+<script type="text/javascript" src="/ts/main.f856840516f7c2ad1769a8f5937e3d08d6cb386e2cd2dd025ae696e0ff207958.js" defer></script>
+
+<style>
+  @font-face {
+    font-family: 'love';
+    src: url(https://gennki-mxh.github.io/font/aiQingTi.ttf) format('truetype');
+  }
+
+  :root {
+    --base-font-family: 'love';
+    --code-font-family: 'love';
+  }
+</style>
+
+
+<style>
+    #TableOfContents > ul, ol {
+        ul, ol {
+            display: none;
+        }
+        .open {
+            display: block;
+        }
+    }
+</style>
+
+<script>
+    function initTocHide() {
+        
+        let toc = document.querySelector(".widget--toc");
+        if (!toc) {
+            return;
+        }
+        
+        window.addEventListener('scroll', function() {
+            
+            let openUl = document.querySelectorAll(".open");
+            if (openUl.length > 0) {
+              openUl.forEach((ul) => {
+                ul.classList.remove("open")
+              })
+            }
+            
+            let currentLi = document.querySelector(".active-class");
+            if (!currentLi) {
+                return
+            }
+            
+            if (currentLi.children.length > 1) {
+                currentLi.children[1].classList.add("open")
+            }
+            
+            let ul = currentLi.parentElement;
+            do {
+                ul.classList.add("open");
+                ul = ul.parentElement.parentElement
+            } while (ul !== undefined && (ul.localName === 'ul' || ul.localName === 'ol'))
+        });
+    }
+    initTocHide()
+</script>
+
+
+<style>
+     
+    :root, [data-scheme="light"] {
+        --backtop-icon: url(https://gennki-mxh.github.io/icons/backTop-light.svg);
+    }
+
+     
+    :root, [data-scheme="dark"] {
+        --backtop-icon: url(https://gennki-mxh.github.io/icons/backTop-dark.svg);
+    }
+
+    #backTopBtn {
+        display: none;
+        position: fixed;
+        bottom: 80px;   
+        z-index: 99;
+        cursor: pointer;
+        width: 30px;
+        height: 30px;
+        background-image: var(--backtop-icon);
+        background-size: contain;
+        background-repeat: no-repeat;
+        background-position: center;
+    }
+</style>
+
+<script>
+    
+
+    function initScrollTop() {
+        let rightSideBar = document.querySelector(".right-sidebar");
+        if (!rightSideBar) {
+            return;
+        }
+        
+        let btn = document.createElement("div");
+        btn.id = "backTopBtn";
+        btn.onclick = backToTop
+        rightSideBar.appendChild(btn)
+        
+        window.onscroll = function() {
+            
+            if (document.body.scrollTop > 20 || document.documentElement.scrollTop > 20) {
+                btn.style.display = "block";
+            } else {
+                btn.style.display = "none";
+            }
+        };
+    }
+
+    
+
+    function backToTop(){
+        window.scrollTo({ top: 0, behavior: "smooth" })
+    }
+
+    initScrollTop();
+</script>
+
+
+<style>
+    .highlight {
+         
+        max-height: 400px;
+        overflow: hidden;
+    }
+
+    .code-show {
+        max-height: none !important;
+    }
+
+    .code-more-box {
+        width: 100%;
+        padding-top: 78px;
+        background-image: -webkit-gradient(linear, left top, left bottom, from(rgba(255, 255, 255, 0)), to(#fff));
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        z-index: 1;
+    }
+
+    .code-more-btn {
+        display: block;
+        margin: auto;
+        width: 44px;
+        height: 22px;
+        background: #f0f0f5;
+        border-top-left-radius: 8px;
+        border-top-right-radius: 8px;
+        padding-top: 6px;
+        cursor: pointer;
+    }
+
+    .code-more-img {
+        cursor: pointer !important;
+        display: block;
+        margin: auto;
+        width: 22px;
+        height: 16px;
+    }
+</style>
+
+<script>
+  function initCodeMoreBox() {
+    let codeBlocks = document.querySelectorAll(".highlight");
+    if (!codeBlocks) {
+      return;
+    }
+    codeBlocks.forEach(codeBlock => {
+      
+      if (codeBlock.scrollHeight <= codeBlock.clientHeight) {
+        return;
+      }
+      
+      
+      let codeMoreBox = document.createElement('div');
+      codeMoreBox.classList.add('code-more-box');
+      
+      let codeMoreBtn = document.createElement('span');
+      codeMoreBtn.classList.add('code-more-btn');
+      codeMoreBtn.addEventListener('click', () => {
+        codeBlock.classList.add('code-show');
+        codeMoreBox.style.display = 'none';
+        
+        window.dispatchEvent(new Event('resize'))
+      })
+      
+      let img = document.createElement('img');
+      img.classList.add('code-more-img');
+      img.src = "https://gennki-mxh.github.io/icons/codeMore.png"
+      
+      codeMoreBtn.appendChild(img);
+      codeMoreBox.appendChild(codeMoreBtn);
+      codeBlock.appendChild(codeMoreBox)
+    })
+  }
+  
+  initCodeMoreBox();
+</script>
+
+
+<div id="particles-js"></div>
+
+<script src=https://gennki-mxh.github.io/background/particles.min.js></script>
+<script>
+  particlesJS.load('particles-js', "https://gennki-mxh.github.io/background/particlesjs-config.json", function() {
+    console.log('particles.js loaded - callback');
+  });
+</script>
+
+<style>
+  #particles-js {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: -1;
+  }
+</style>
+
+
+
+  
+    <script defer src="https://cn.vercount.one/js"></script>
+
+
+
+<script>
+    function showHideView() {
+        
+        let viewCounts = document.querySelectorAll("#viewCount");
+        if (viewCounts) {
+            
+            let article =  document.querySelector(".article-page");
+            if (!article) {
+                viewCounts.forEach(ele => {
+                    ele.style.display = 'none';
+                });
+            }
+        }
+    }
+    
+    showHideView();
+</script>
+
+
+
+
+
+
+<div id="jsi-flying-fish-container"></div>
+
+
+<style>
+#jsi-flying-fish-container {
+    position: fixed;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    height: 200px;
+    z-index: -1;
+    opacity: 0;           
+    overflow: hidden;
+    pointer-events: none;
+    transition: opacity .3s;
+}
+ 
+.show-fish #jsi-flying-fish-container {
+    opacity: .5;
+}
+</style>
+
+
+<script>
+window.initFlyingFish = function () {
+    const container = document.getElementById('jsi-flying-fish-container');
+    if (!container) return;
+
+     
+    const oldCanvas = container.querySelector('canvas');
+    if (oldCanvas) oldCanvas.remove();
+
+     
+    const script = document.createElement('script');
+    script.src = 'https://cdn.meimolihan.eu.org/hugo/fish/fish.js';
+    script.onload = function () {
+        if (typeof RENDERER !== 'undefined') RENDERER.init();
+    };
+    document.head.appendChild(script);
+
+     
+    function checkBottom() {
+        const doc = document.documentElement;
+        const isBottom = (window.innerHeight + Math.ceil(window.pageYOffset))
+                         >= (doc.scrollHeight - 10);
+        document.body.classList.toggle('show-fish', isBottom);
+    }
+
+     
+    window.addEventListener('scroll', checkBottom);
+    checkBottom(); 
+};
+
+ 
+document.addEventListener('DOMContentLoaded', initFlyingFish);
+
+ 
+document.addEventListener('pjax:complete', initFlyingFish);
+</script>
+
+    </body>
+</html>
